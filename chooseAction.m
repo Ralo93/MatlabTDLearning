@@ -1,0 +1,1 @@
+function action = chooseAction(Q, state, epsilon)    action = 0;    if (rand(1) > epsilon)        action = ceil(rand(1)*2);        return;      else        values = Q(state, :);    [val, idx] = max(values);      action = idx;         return;  end
