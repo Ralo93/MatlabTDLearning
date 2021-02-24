@@ -18,9 +18,9 @@ Octave1.0
 Octave1.0
 
 ## Illustrations <br>
-<img src="https://user-images.githubusercontent.com/78420756/109026600-33376980-76c0-11eb-9154-674b188818f3.png" width="260" height="200"> <br>
-source: Michael Olbrich Universität Augsburg
-A model of a mikroaktuator in the hemisphere system.
+<img src="https://user-images.githubusercontent.com/78420756/109026600-33376980-76c0-11eb-9154-674b188818f3.png" width="260" height="200"> <br> 
+A model of a mikroaktuator in the hemisphere system.<p>
+Source: Michael Olbrich Universität Augsburg 
   
 ## Examples of use <br>
 
