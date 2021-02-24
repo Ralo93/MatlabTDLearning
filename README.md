@@ -18,7 +18,7 @@ Octave1.0
 Octave1.0
 
 ## Illustrations <br>
-<img src="https://user-images.githubusercontent.com/78420756/109026600-33376980-76c0-11eb-9154-674b188818f3.png" width="260" height="230">
+<img src="https://user-images.githubusercontent.com/78420756/109026600-33376980-76c0-11eb-9154-674b188818f3.png" width="260" height="210">
 Left: Virtual Network Request (VNR) Wrapper Algorithm. Right: Genetic Algorithm. 
   
 ## Examples of use <br>
