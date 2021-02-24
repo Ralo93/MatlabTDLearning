@@ -3,10 +3,13 @@ clear ; close all; clc;
 reference = 0;
 statevector = [];
 refvector   = [];
-ct          = 0;
+rewards = [];
+eps = [];
+ct = 0;
+
 
 %Loop parameters
-total_episodes = 500;
+total_episodes = 200;
 max_steps      = 1000;
 
 %e-greedy parameter for exploration
@@ -16,7 +19,7 @@ epsilon        = 0.8;
 % with observation and action space
 % action space is only 1 or 2 (in 2d)
 % the observation space is -90 to 90 grad encoded as error (0-900)
-Q = zeros(900, 2);
+Q = rand(900, 2);
 
 %dynamics gibt mir den neuen state
 
@@ -26,7 +29,6 @@ for i = 1:total_episodes
   state1     = floor(30*rand(1))-15; %floor(90*rand(1))-45;
   error      = state1-reference;
   stateError = floor((error+91)*900/181);
-  fprintf('stateError: %d \n', stateError);
   action1    = chooseAction(Q, stateError, epsilon);
   
   while (t < max_steps)
@@ -42,6 +44,7 @@ for i = 1:total_episodes
     end
   
     rewardValue = reward(reference, state2);
+    rewards = [rewards; rewardValue];
     error      = state2-reference;
     discerror2 = floor((error+91)*900/181);
     action2    = chooseAction(Q, discerror2, epsilon);
@@ -59,14 +62,24 @@ for i = 1:total_episodes
     statevector = [statevector; state1];
     refvector   = [refvector; reference];
 
-    if length(statevector)>3000
-        statevector = [];
-        refvector   = [];
+    
+    if length(statevector) > 25000
+       
+       figure()
+       hold on;
+       grid on;
+       plot(statevector)
+       plot(refvector)
+       
+       statevector = [];
+       refvector   = [];
     end
   end
-  
-  epsilon = epsilon + 0.2/total_episodes;
 
+
+  epsilon = epsilon + 0.2/total_episodes; %epsilon wird größer => exploration sinkt
+  eps = [eps; epsilon];
+ 
 end
 
 for ii=1:length(statevector)
@@ -79,5 +92,12 @@ grid on;
 plot(anglevector)
 plot(refvector)
 
+figure();
+grid on;
+plot(rewards)
+
+figure();
+grid on;
+plot(eps)
 
 

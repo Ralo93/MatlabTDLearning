@@ -1,11 +1,12 @@
 clear ; close all; clc;
 
 reference = [0, 0, 1]';
+eps = [];
 
 u = [0, 0, 1]';
 
 epsilon        = 0.8;
-total_episodes = 500;
+total_episodes = 100;
 max_steps      = 100;
 % alpha          = 0.85;
 % gamma          = 0.95;
@@ -73,7 +74,6 @@ for i = 1:total_episodes
   
   action1 = chooseAction3d(Q, state1, epsilon); 
   
-  
   while (t < max_steps)
   
     %ändern auf vnorm AND ceiled/floored to 0.5 steps -> random reference (gültig!)
@@ -119,7 +119,6 @@ for i = 1:total_episodes
     
     state2 = (360*x+1) + (y*2);
     action2    = chooseAction3d(Q, state2, epsilon);
-
    
     qValue = update(Q, state1, state2, rewardValue, action1, action2);
     Q(state1, action1) = qValue;
@@ -141,7 +140,7 @@ for i = 1:total_episodes
   end
   
   epsilon = epsilon + 0.2/total_episodes; %epsilon wird größer => exploration sinkt
-
+  eps = [eps; epsilon];
 end
 
 for ii=1:length(statevector)
@@ -154,5 +153,9 @@ grid on;
 plot(anglevector)
 plot(refvector)
 
+figure();
+hold;
+grid on;
+plot(eps)
 
 
