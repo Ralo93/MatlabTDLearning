@@ -34,15 +34,10 @@ vnorm1(2)  =   0.4082; % entspricht normiertem -2,2,4 vektor (gültig)
 vnorm1(3)  =   0.8165; %winkel zu xy-plane(vnorm=[0;0;1]) ist 54.736°
 vnorm1 = vnorm1';
 
-%fprintf('Initializing...');
-%Q = initQ(Q);
-%fprintf('Initalization done.');
-
 for i = 1:total_episodes
   fprintf('episode %d \n',i);
   
   t = 0;
-  
   reference = reference/norm(reference); %normierung
   %error      = vnorm1-reference;
   %state1 = floor((error+91)*900/181); %discerror nur in x und y richtung?
@@ -150,7 +145,6 @@ end
 figure();
 hold on;
 grid on;
-plot(anglevector)
 plot(refvector)
 
 figure();
