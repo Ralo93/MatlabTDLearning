@@ -1,0 +1,1 @@
+function qValue = update(Q, state, state2, reward, action, action2)    gamma = 0.95;  alpha = 0.85;      predict = Q(state, action);  target = reward + gamma*Q(state2, action2);    Q(state, action) = Q(state, action) + alpha * (target - predict);    qValue = Q(state, action);      end

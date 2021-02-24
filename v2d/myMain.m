@@ -1,40 +1,33 @@
+%Clean initialization
 clear ; close all; clc;
-
 reference = 0;
-
-
-
-epsilon        = 0.8;
-total_episodes = 500;
-max_steps      = 1000;
-% alpha          = 0.85;
-% gamma          = 0.95;
-%threshold      = 0.5;
-
-% rewards = zeros(total_episodes, 1);
-
-% with observation space and action space
-% action space is only 1 or 2
-% the observation space is -90 to 90 grad (error!), 0-900
-Q = zeros(900, 2);
-
-%dynamics gibt mir den neuen state
-% state1 = 1;
-% action1 = chooseAction(Q, state1);
-
 statevector = [];
 refvector   = [];
 ct          = 0;
 
+%Loop parameters
+total_episodes = 500;
+max_steps      = 1000;
+
+%e-greedy parameter for exploration
+epsilon        = 0.8;
+
+% ***Q table***
+% with observation and action space
+% action space is only 1 or 2 (in 2d)
+% the observation space is -90 to 90 grad encoded as error (0-900)
+Q = zeros(900, 2);
+
+%dynamics gibt mir den neuen state
+
 for i = 1:total_episodes
   fprintf('episode %d \n',i);
-  
   t = 0;
-  state1     = floor(30*rand(1))-15;%floor(90*rand(1))-45;
+  state1     = floor(30*rand(1))-15; %floor(90*rand(1))-45;
   error      = state1-reference;
-  discerror1 = floor((error+91)*900/181);
-  action1    = chooseAction(Q, discerror1, epsilon);
-  
+  stateError = floor((error+91)*900/181);
+  fprintf('stateError: %d \n', stateError);
+  action1    = chooseAction(Q, stateError, epsilon);
   
   while (t < max_steps)
   
@@ -43,24 +36,20 @@ for i = 1:total_episodes
     %this is an angle -48.5
     state2 = dynamics2d(state1, action1, 0.7);
     if (state2 > 45.0 || state2 < -45.0)
-    
+      
       break;
     
     end
   
-    
-  
     rewardValue = reward(reference, state2);
-
     error      = state2-reference;
     discerror2 = floor((error+91)*900/181);
     action2    = chooseAction(Q, discerror2, epsilon);
 
-    qValue = update(Q, discerror1, discerror2, rewardValue, action1, action2);
-    Q(discerror1, action1) = qValue;
+    qValue = update(Q, stateError, discerror2, rewardValue, action1, action2);
+    Q(stateError, action1) = qValue;
   
-  
-    discerror1 = discerror2;
+    stateError = discerror2;
     action1    = action2;
     state1     = state2;
     
