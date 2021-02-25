@@ -4,7 +4,5 @@ function Q = terminalQSetter(Q, state)
     
     Q(state, i) = 0;
   end
-  
-  
-  
+ 
 end
