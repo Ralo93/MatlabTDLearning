@@ -10,6 +10,17 @@ value = 0.8
 
 episodes = 200;
 
+ct = 0:1:1000;
+
+k = 0.01;
+x = sin(k*ct)/2.3;
+y = sin(2*k*ct)/2.3;
+z = sqrt(1-x.^2-y.^2);
+reference = [x;y;z];
+
+figure();
+plot(x,y)
+
 for i = 1:episodes
   
   #ep2 = exp(1/episodes-i);
