@@ -16,10 +16,25 @@ k = 0.01;
 x = sin(k*ct)/2.3;
 y = sin(2*k*ct)/2.3;
 z = sqrt(1-x.^2-y.^2);
-reference = [x;y;z];
+reference = [x;y];
 
 figure();
 plot(x,y)
+title ("x-y Ebene");
+xlabel ("x");
+ylabel ("y");
+
+figure();
+plot(y,z)
+title ("y-z Ebene");
+xlabel ("y");
+ylabel ("z");
+
+figure();
+plot(x,z)
+title ("x-z Ebene");
+xlabel ("x");
+ylabel ("z");
 
 for i = 1:episodes
   
@@ -42,10 +57,10 @@ for i = 1:episodes
 end
 
 
-figure()
-plot(eps)
+#figure()
+#plot(eps)
 
-figure()
-plot(eps2)
+#figure()
+#plot(eps2)
 
 

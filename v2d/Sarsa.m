@@ -91,12 +91,12 @@ for ii=1:length(statevector)
     anglevector(ii) = statevector(ii);
 end
 
-figure();
+h1 = figure();
 hold on;
 grid on;
 plot(anglevector)
 plot(refvector)
-#savefig(h1, 'ref and statevector.fig');
+savefig(h1, 'ref and statevector.png');
 
 figure();
 grid on;
