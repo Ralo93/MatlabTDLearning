@@ -9,7 +9,8 @@
 A Temporal Difference (TD) Learning approach for a hemisphere project.
 
 ## Sources
-In collaboration with University of Augsburg.
+In collaboration with University of Augsburg. <br>
+good source: https://towardsdatascience.com/td-in-reinforcement-learning-the-easy-way-f92ecfa9f3ce
 
 ## Requirements
 Octave1.0
