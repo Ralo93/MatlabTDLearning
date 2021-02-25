@@ -11,6 +11,8 @@ ct = 0;
 %Loop parameters
 total_episodes = 200;
 max_steps      = 1000;
+alpha = 0.85;
+gamma = 0.75;
 
 %e-greedy parameter for exploration
 epsilon        = 0.8;
@@ -31,6 +33,9 @@ for i = 1:total_episodes
   stateError = floor((error+91)*900/181);
   action1    = chooseAction(Q, stateError, epsilon);
   
+  %TODO: Changing reference to be less frequent?
+  %for SARSA: initialize all terminal states with value as 0
+  
   while (t < max_steps)
   
     reference = sin(ct*0.01)*10;
@@ -49,7 +54,7 @@ for i = 1:total_episodes
     discerror2 = floor((error+91)*900/181);
     action2    = chooseAction(Q, discerror2, epsilon);
 
-    qValue = update(Q, stateError, discerror2, rewardValue, action1, action2);
+    qValue = update(Q, stateError, discerror2, rewardValue, action1, action2, alpha, gamma);
     Q(stateError, action1) = qValue;
   
     stateError = discerror2;
