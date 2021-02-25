@@ -63,13 +63,13 @@ for i = 1:total_episodes
     refvector   = [refvector; reference];
 
     
-    if length(statevector) > 25000
+    if length(statevector) > 10000
        
-       figure()
-       hold on;
-       grid on;
-       plot(statevector)
-       plot(refvector)
+       #figure()
+       #hold on;
+       #grid on;
+       #plot(statevector)
+       #plot(refvector)
        
        statevector = [];
        refvector   = [];
@@ -91,13 +91,16 @@ hold on;
 grid on;
 plot(anglevector)
 plot(refvector)
+#savefig(h1, 'ref and statevector.fig');
 
 figure();
 grid on;
 plot(rewards)
+#savefig(h2, 'rewards.fig');
 
 figure();
 grid on;
 plot(eps)
+#savefig(h3, 'epsilon.fig');
 
 
