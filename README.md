@@ -6,7 +6,8 @@
 
 
 ## General info
-A Temporal Difference (TD) Learning approach for a hemisphere project.
+A Temporal Difference (TD) Learning approach for a modelled mikroactuator, shaped like a hemisphere.
+ALso, a parallel Q-Learning approach is tested and compared.
 
 ## Sources
 In collaboration with University of Augsburg. <br>
