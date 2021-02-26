@@ -7,7 +7,7 @@
 
 ## General info
 A Temporal Difference (TD) Learning approach (SARSA in this case) for a modelled mikroactuator, shaped like a hemisphere.
-ALso, a parallel Q-Learning approach is tested and compared.
+Also, a parallel Q-Learning approach is tested and compared.
 
 ## Sources
 In collaboration with University of Augsburg. <br>
