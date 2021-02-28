@@ -8,7 +8,8 @@
 
 ## General info
 A Temporal Difference (TD) Learning approach (SARSA in this case) for a modelled mikroactuator, shaped like a hemisphere.
-Also, a parallel Q-Learning approach is tested and compared.
+Also, a parallel Q-Learning approach is tested and compared. <br>
+Right now I translate the dynamics into the 3D-version, experiment with the expsilon parameter for more exploration and also experiment with positive instead of negative rewards.
 
 ## Sources
 In collaboration with University of Augsburg. <br>
