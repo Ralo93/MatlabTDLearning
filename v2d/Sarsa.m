@@ -1,3 +1,6 @@
+%SARSA On-Policy
+
+
 %Clean initialization
 clear ; close all; clc;
 reference = 0;
@@ -9,10 +12,10 @@ ct = 0;
 
 
 %Loop parameters
-total_episodes = 200;
+total_episodes = 100;
 max_steps      = 1000;
-alpha = 0.85;
-gamma = 0.75;
+alpha = 0.9;
+gamma = 0.8;
 
 %e-greedy parameter for exploration
 epsilon        = 0.8;
@@ -36,10 +39,15 @@ for i = 1:total_episodes
   %TODO: Changing reference to be less frequent?
   %for SARSA: initialize all terminal states with value as 0
   
+  
   while (t < max_steps)
   
     reference = sin(ct*0.01)*10;
-   
+    
+    #refState = giveStateFromAngle(reference);
+    #fprintf('refState %d \n',refState);
+    
+    %fprintf('reference %d \n',reference);
     %this is an angle -48.5
     state2 = dynamics2d(state1, action1, 0.7);
     if (state2 > 45.0 || state2 < -45.0)
@@ -68,7 +76,7 @@ for i = 1:total_episodes
     refvector   = [refvector; reference];
 
     
-    if length(statevector) > 10000
+    if length(statevector) > 25000
        
        #figure()
        #hold on;
@@ -96,7 +104,9 @@ hold on;
 grid on;
 plot(anglevector)
 plot(refvector)
-savefig(h1, 'ref and statevector.png');
+legend('Statevector', 'Reference');
+title ("Trajectory following");
+#savefig(h1, 'ref and statevector.png');
 
 figure();
 grid on;
