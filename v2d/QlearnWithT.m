@@ -11,10 +11,11 @@ ct = 0;
 
 
 %Loop parameters
-total_episodes = 300;
+total_episodes = 50;
 max_steps      = 1000;
 alpha = 0.85;
 gamma = 0.75;
+
 
 %e-greedy parameter for exploration
 epsilon        = 0.8;
@@ -23,9 +24,10 @@ epsilon        = 0.8;
 % with observation and action space
 % action space is only 1 or 2 (in 2d)
 % the observation space is -90 to 90 grad encoded as error (0-900)
-Q = rand(900, 2);
+t = load("T.mat");
+tt = struct2cell(t);
+Q = cell2mat(tt);
 
-%dynamics gibt mir den neuen state
 
 for i = 1:total_episodes
   fprintf('episode %d \n',i);
@@ -118,7 +120,7 @@ end
 
 
 # Saving table to mat file for symmetry and positive value check
-save('T.mat', 'Q');
+save('Tlearned.mat', 'Q');
 
 
 
