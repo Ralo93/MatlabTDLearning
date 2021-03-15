@@ -1,7 +1,7 @@
 %Q-Learning Off-Policy
 
 %Clean initialization
-clear; close all; clc;
+clear ; close all; clc;
 reference = 0;
 statevector = [];
 refvector   = [];
@@ -18,20 +18,19 @@ gamma = 0.75;
 
 
 %e-greedy parameter for exploration
-epsilon        = 0.8;
+epsilon        = 1;
 
 % ***Q table***
 % with observation and action space
 % action space is only 1 or 2 (in 2d)
 % the observation space is -90 to 90 grad encoded as error (0-900)
-t = load("Tlearned2.mat");
+t = load("Tlearned.mat");
 tt = struct2cell(t);
 Q = cell2mat(tt);
 
-fprintf('Learning...');
+
 for i = 1:total_episodes
-  #fprintf('episode %d \n',i);
-  
+  fprintf('episode %d \n',i);
   t = 0;
   state1     = floor(30*rand(1))-15; %floor(90*rand(1))-45;
   error      = state1-reference;
@@ -69,22 +68,22 @@ for i = 1:total_episodes
     refvector   = [refvector; reference];
 
     
-    #if length(statevector) > 25000
+    if length(statevector) > 25000
        
-     #  figure()
-     #  hold on;
-     #  grid on;
-     #  plot(statevector)
-     #  plot(refvector)
+       figure()
+       hold on;
+       grid on;
+       plot(statevector)
+       plot(refvector)
        
-      # statevector = [];
-      # refvector   = [];
-   # end
+       statevector = [];
+       refvector   = [];
+    end
   end
 
 
-  epsilon = epsilon + 0.2/total_episodes; %epsilon wird größer => exploration sinkt
-  eps = [eps; epsilon];
+  #epsilon = epsilon + 0.2/total_episodes; %epsilon wird größer => exploration sinkt
+  #eps = [eps; epsilon];
  
 end
 
@@ -118,10 +117,10 @@ end
 #plot(eps)
 
 #savefig(h3, 'epsilon.fig');
-fprintf('Finished!');
+
 
 # Saving table to mat file for symmetry and positive value check
-save('Tlearned2.mat', 'Q');
+save('Tlearned.mat', 'Q');
 
 
 
