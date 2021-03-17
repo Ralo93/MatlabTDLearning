@@ -10,8 +10,9 @@ eps = [];
 ct = 0;
 
 %Loop parameters
-total_episodes = 500;
+total_episodes = 100;
 max_steps      = 1000;
+loopstate = 0;
 
 #Learning and activation parameters
 alpha = 0.85;
@@ -28,7 +29,7 @@ ende = 1;
 % action space is only 1 or 2 (in 2d)
 % the observation space is -90 to 90 grad encoded as error (0-900)
 #Q = rand(900, 2);
-t = load("additional.mat");
+t = load("learned.mat");
 tt = struct2cell(t);
 Q = cell2mat(tt);
 
@@ -38,8 +39,12 @@ for i = 1:total_episodes
   
   #random initialization of starting state
   accc = 0.5;
-  state1 = (round(85.5*rand(1)/0.5)*0.5) - 40;
-
+  
+  if ( i == 1)
+    state1 = (round(85.5*rand(1)/0.5)*0.5) - 40;
+  else
+    state1 = loopstate;
+  end
   #fprintf('start: %d \n', state1);
   error      = state1-reference;
   stateError = floor((error+91)*900/181);
@@ -111,6 +116,15 @@ for i = 1:total_episodes
     #   statevector = [];
     #   refvector   = [];
    #end
+   
+   #take this state for the next episode
+   if ( t == 999)
+     
+     loopstate = state1;
+     
+     
+   endif
+   
   end
 
   #***this only works for ~ 1000 episodes!
