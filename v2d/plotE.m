@@ -6,8 +6,7 @@ function a = plotE(episodes)
   
   for i = 1:episodes
     
-    
- 
+
     e = start+(ende-start)*(exp(i-episodes)^(1/(episodes/10)));
     eps = [eps;e];
     
