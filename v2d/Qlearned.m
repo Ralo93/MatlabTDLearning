@@ -11,11 +11,13 @@ ct = 0;
 
 
 %Loop parameters
-total_episodes = 100;
+total_episodes = 10;
 max_steps      = 1000;
+
+#Learning parameters and activation
 alpha = 0.85;
 gamma = 0.75;
-
+u = 0.7;
 
 %e-greedy parameter for exploration
 epsilon        = 1;
@@ -24,7 +26,7 @@ epsilon        = 1;
 % with observation and action space
 % action space is only 1 or 2 (in 2d)
 % the observation space is -90 to 90 grad encoded as error (0-900)
-t = load("Tlearned.mat");
+t = load("TlearnedF.mat");
 tt = struct2cell(t);
 Q = cell2mat(tt);
 
@@ -39,10 +41,11 @@ for i = 1:total_episodes
   
   while (t < max_steps)
   
-    reference = sin(ct*0.01)*10;
+    reference = sin(ct*0.001)*35; #altered!
+    
     action1    = chooseAction(Q, stateError, epsilon);
     %this is an angle -48.5
-    state2 = dynamics2d(state1, action1, 0.7);
+    state2 = dynamics2d(state1, action1, u);
     if (state2 > 45.0 || state2 < -45.0)
       
       break;
@@ -94,20 +97,20 @@ end
 
 
 #GOOD
-#h1 = figure();
-#hold on;
-#grid on;
-#plot(anglevector)
-#plot(refvector)
-#legend('Statevector', 'Reference');
-#title ("Trajectory following");
+h1 = figure();
+hold on;
+grid on;
+plot(anglevector)
+plot(refvector)
+legend('Statevector', 'Reference');
+title ("Trajectory following");
 
 #savefig(h1, 'ref and statevector.png');
 
 #GOOD
-#figure();
-#grid on;
-#plot(rewards)
+figure();
+grid on;
+plot(rewards)
 
 #savefig(h2, 'rewards.fig');
 
@@ -120,7 +123,7 @@ end
 
 
 # Saving table to mat file for symmetry and positive value check
-save('Tlearned.mat', 'Q');
+save('nnew.mat', 'Q');
 
 
 

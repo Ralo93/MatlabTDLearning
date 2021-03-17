@@ -9,13 +9,14 @@ rewards = [];
 eps = [];
 ct = 0;
 
-
 %Loop parameters
 total_episodes = 100;
 max_steps      = 1000;
+
+#Learning and activation parameters
 alpha = 0.85;
 gamma = 0.75;
-
+u = 0.7; #maybe have u decreased after a while
 
 %e-greedy parameter for exploration
 epsilon        = 0.8;
@@ -24,13 +25,13 @@ epsilon        = 0.8;
 % with observation and action space
 % action space is only 1 or 2 (in 2d)
 % the observation space is -90 to 90 grad encoded as error (0-900)
-t = load("Tlearned2.mat");
+t = load("TlearnedF.mat");
 tt = struct2cell(t);
 Q = cell2mat(tt);
 
-fprintf('Learning...');
+fprintf('Learning... \n');
 for i = 1:total_episodes
-  #fprintf('episode %d \n',i);
+  fprintf('episode %d \n',i);
   
   t = 0;
   state1     = floor(30*rand(1))-15; %floor(90*rand(1))-45;
@@ -40,10 +41,17 @@ for i = 1:total_episodes
   
   while (t < max_steps)
   
-    reference = sin(ct*0.01)*10;
+    reference = sin(ct*0.001)*40;
+    
+    #***IMPORTANT***
+    #the terminal state should actually be initialized with 0 at this point.
+    #I am not sure, if this makes sense with this rapid change of references.
+    
+    
+    
     action1    = chooseAction(Q, stateError, epsilon);
     %this is an angle -48.5
-    state2 = dynamics2d(state1, action1, 0.7);
+    state2 = dynamics2d(state1, action1, u);
     if (state2 > 45.0 || state2 < -45.0)
       
       break;
@@ -65,65 +73,65 @@ for i = 1:total_episodes
     t  = t+1;
     ct = ct+1;
     
+    #***activate for plotting!***
     statevector = [statevector; state1];
     refvector   = [refvector; reference];
 
-    
-    #if length(statevector) > 25000
+    #***for plotting trajectory from the beginning to end***
+    if length(statevector) > 50000
        
-     #  figure()
-     #  hold on;
-     #  grid on;
-     #  plot(statevector)
-     #  plot(refvector)
+       figure()
+       hold on;
+       grid on;
+       plot(statevector)
+       plot(refvector)
        
-      # statevector = [];
-      # refvector   = [];
-   # end
+       statevector = [];
+       refvector   = [];
+    end
   end
 
 
   epsilon = epsilon + 0.2/total_episodes; %epsilon wird größer => exploration sinkt
+  #***activate for plotting***
   eps = [eps; epsilon];
  
 end
 
+#***activate for plotting***
 for ii=1:length(statevector)
     anglevector(ii) = statevector(ii);
 end
 
 
-
 #GOOD
-#h1 = figure();
-#hold on;
-#grid on;
-#plot(anglevector)
-#plot(refvector)
-#legend('Statevector', 'Reference');
-#title ("Trajectory following");
+h1 = figure();
+hold on;
+grid on;
+plot(anglevector)
+plot(refvector)
+legend('Statevector', 'Reference');
+title ("Trajectory following");
 
 #savefig(h1, 'ref and statevector.png');
 
 #GOOD
-#figure();
-#grid on;
-#plot(rewards)
+figure();
+grid on;
+plot(rewards)
 
 #savefig(h2, 'rewards.fig');
 
 #GOOD
-#figure();
-#grid on;
-#plot(eps)
+figure();
+grid on;
+plot(eps)
 
 #savefig(h3, 'epsilon.fig');
 fprintf('Finished!');
 
 # Saving table to mat file for symmetry and positive value check
-save('Tlearned2.mat', 'Q');
-
-
+save('TlearnedF.mat', 'Q');
 
 #figure();
 #hold on;
