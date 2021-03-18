@@ -45,7 +45,7 @@ for i = 1:total_episodes
   
   while (t < max_steps)
   
-    reference = sin(ct*0.001)*35; #altered!
+    reference = sin(ct*0.001)*44; #the last digit describes the angle to which learning should be done, maximum is 44
 
     #*** rounding the reference to 0.5 steps ***
     acc = 0.5;
@@ -70,6 +70,8 @@ for i = 1:total_episodes
     #fprintf('state: %d \n', state2);
     if (state2 > 45.0 || state2 < -45.0)
       
+      Q(q, 1) = tmp1;
+      Q(q, 2) = tmp2;
       break;
     
     end
@@ -97,17 +99,17 @@ for i = 1:total_episodes
     Q(q, 2) = tmp2;
     
     
-    #if length(statevector) > 25000
-    #   
-    #   figure()
-    #   hold on;
-    #   grid on;
-    #   plot(statevector)
-    #   plot(refvector)
-    #   
-    #   statevector = [];
-    #   refvector   = [];
-   #end
+    if length(statevector) > 50000
+       
+       figure()
+       hold on;
+       grid on;
+       plot(statevector)
+       plot(refvector)
+       
+       statevector = [];
+       refvector   = [];
+   end
   end
 
   #***this only works for ~ 1000 episodes!
@@ -145,15 +147,15 @@ plot(rewards)
 #savefig(h2, 'rewards.fig');
 
 #GOOD
-#figure();
-#grid on;
-#plot(eps)
+figure();
+grid on;
+plot(eps)
 
 #savefig(h3, 'epsilon.fig');
 
 
-# Saving table to mat file for symmetry and positive value check
-save('afterReset.mat', 'Q');
+# Saving table to mat file for symmetry and value check
+save('learned.mat', 'Q');
 
 
 #figure();

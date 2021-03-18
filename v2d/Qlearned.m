@@ -10,7 +10,7 @@ eps = [];
 ct = 0;
 
 %Loop parameters
-total_episodes = 100;
+total_episodes = 50;
 max_steps      = 1000;
 loopstate = 0;
 
@@ -18,7 +18,6 @@ loopstate = 0;
 alpha = 0.85;
 gamma = 0.75;
 u = 0.7;
-
 %e-greedy parameter for exploration
 epsilon = 1;
 start = 0.8;
@@ -28,7 +27,8 @@ ende = 1;
 % with observation and action space
 % action space is only 1 or 2 (in 2d)
 % the observation space is -90 to 90 grad encoded as error (0-900)
-#Q = rand(900, 2);
+
+#***loading learned Q-table from Qlearn.m
 t = load("learned.mat");
 tt = struct2cell(t);
 Q = cell2mat(tt);
@@ -40,6 +40,7 @@ for i = 1:total_episodes
   #random initialization of starting state
   accc = 0.5;
   
+  #random initialize starting state, otherwise take state from previous episode/iteration
   if ( i == 1)
     state1 = (round(85.5*rand(1)/0.5)*0.5) - 40;
   else
@@ -53,7 +54,7 @@ for i = 1:total_episodes
   
   while (t < max_steps)
   
-    reference = sin(ct*0.001)*35; #altered!
+    reference = sin(ct*0.001)*40; #the last digit describes the angle to follow in Qlearned, max is ~40
 
     #*** rounding the reference to 0.5 steps ***
     acc = 0.5;
@@ -65,7 +66,7 @@ for i = 1:total_episodes
     #I am not sure, if this makes sense with this rapid change of references, 
     #because the setting to 0 should actually happen in the outer loop!   
     
-    #setting terminal Q values to 0, but remember entries for reseting them
+    #setting terminal Q values to 0, but remember entries for resetting them
     tmp1 = Q(q, 1);
     tmp2 = Q(q, 2);
     
@@ -78,6 +79,8 @@ for i = 1:total_episodes
     #fprintf('state: %d \n', state2);
     if (state2 > 45.0 || state2 < -45.0)
       
+      Q(q, 1) = tmp1;
+      Q(q, 2) = tmp2;
       break;
     
     end
@@ -105,23 +108,22 @@ for i = 1:total_episodes
     Q(q, 2) = tmp2;
     
     
-    #if length(statevector) > 25000
-    #   
-    #   figure()
-    #   hold on;
-    #   grid on;
-    #   plot(statevector)
-    #   plot(refvector)
-    #   
-    #   statevector = [];
-    #   refvector   = [];
-   #end
+    if length(statevector) > 50000
+       
+       figure()
+       hold on;
+       grid on;
+       plot(statevector)
+       plot(refvector)
+       
+       statevector = [];
+       refvector   = [];
+   end
    
-   #take this state for the next episode
+   #take this state for the next episode/iteration
    if ( t == 999)
      
      loopstate = state1;
-     
      
    endif
    
@@ -142,7 +144,7 @@ for ii=1:length(statevector)
 end
 
 
-#GOOD
+#activate for plotting
 h1 = figure();
 hold on;
 grid on;
@@ -153,14 +155,14 @@ title ("Trajectory following");
 
 #savefig(h1, 'ref and statevector.png');
 
-#GOOD
+#activate for plotting
 figure();
 grid on;
 plot(rewards)
 
 #savefig(h2, 'rewards.fig');
 
-#GOOD
+#activate for plotting
 #figure();
 #grid on;
 #plot(eps)
