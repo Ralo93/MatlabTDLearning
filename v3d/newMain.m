@@ -1,72 +1,79 @@
+%Q-Learning Off-Policy
+
+%Clean initialization
 clear ; close all; clc;
-
 reference = [0, 0, 1]';
+statevectorX = [];
+statevectorY = [];
+statevectorZ = [];
+loopref = 0;
+
+refvectorX   = [];
+refvectorY   = [];
+refvectorZ   = [];
+
+rewards = [];
 eps = [];
+ct = 0;
 
-u = [0, 0, 1]';
+idk = [0, 0, 1]';
 
-epsilon        = 0.8;
-total_episodes = 100;
-max_steps      = 100;
-% alpha          = 0.85;
-% gamma          = 0.95;
+%Loop parameters
+total_episodes = 30;
+max_steps      = 1000;
+k = 0.01; # parameter for reference giving
+
+#Learning and activation parameters
+alpha = 0.85;
+gamma = 0.75;
+u = 0.7;
+
+%e-greedy parameter for exploration
+epsilon = 0.8;
+start = 0.8;
+ende = 1;
+
 %threshold      = 0.5;
-
-% rewards = zeros(total_episodes, 1);
-
-% with observation space and action space
 % action space is 1 until 8
 
+% ***Q table***
 % observation space is max 90° error in 2 directions with a discretization
 % of 0.5°: 180*180 = 32400
 Q = rand(32400, 8);
 
-%dynamics gibt mir den neuen state
 % vnorm1 = 1;
 % action1 = chooseAction(Q, vnorm1);
 
-statevector = [];
-refvector   = [];
-ct          = 0;
-
+#testvector
 vnorm1(1)  =  -0.4082;                    
 vnorm1(2)  =   0.4082; % entspricht normiertem -2,2,4 vektor (gültig)
 vnorm1(3)  =   0.8165; %winkel zu xy-plane(vnorm=[0;0;1]) ist 54.736°
-vnorm1 = vnorm1';
+vnorm1 = vnorm1'
 
 for i = 1:total_episodes
   fprintf('episode %d \n',i);
-  
   t = 0;
-  reference = reference/norm(reference); %normierung
-  %error      = vnorm1-reference;
-  %state1 = floor((error+91)*900/181); %discerror nur in x und y richtung?
-                                          %project vnorm1 onto
-  tmpVec1 = vnorm1; %setze x auf 0
-  tmpVec1(1) = 0;
-  tmpVec2 = vnorm1; %setze y auf 0
-  tmpVec2(2) = 0;
   
-  tmpRef1 = reference;
-  tmpRef1(1) = 0; %setze x der reference auf 0
-  tmpRef2 = reference;
-  tmpRef2(2) = 0; %setze y der reference auf 0
+  if (i == 1)
+    reference = reference/norm(reference); %normierung, already normed (0,0,1)
+  else
+    reference = loopref;
+  end
   
-  xAngle = acosd(sum(tmpRef1.*tmpVec1));
-  yAngle = acosd(sum(tmpRef2.*tmpVec2));
+  #get diff angles of state and references lik xAngle = acosd(sum(tmpRef1.*tmpVec1));
+  [xAngle, yAngle] = getAngles(vnorm1, reference);
   
-  %error = [xAngle;yAngle]; %not used
-  %floor(in) + ceil( (in-floor(in))/0.5) * 0.5
-  x = floor(xAngle) + ceil( (xAngle-floor(xAngle))/0.5) * 0.5; %rounding to 0.5 (up)
-  y = floor(yAngle) + ceil( (yAngle-floor(yAngle))/0.5) * 0.5;
-  state1 = (360*x+1) + (y*2);
-  fprintf('errorX %d \n',x);
-  fprintf('errorY %d \n',y);
-  
-  % e.g. [52.0;30.5]  = state 9422
+  #rounding to nearest 0.5 step
+  x = roundIt(xAngle);
+  y = roundIt(yAngle);
+
+  #gives state regarding to rounded x and y {1;32400}  
+  % e.g. [52.0;30.5] (which is rounded x and y above)  = state 9422
   % state1 = [0;0], [0;0.5], [0;1], ... , [0,90], [0.5;0], [0,5;0.5],...
   % state with x = 89.5 and y = 89.5 is state 32400
-  
+  state1 = giveState3d(x,y);
+  fprintf('state1 %d \n',state1);
+
   action1 = chooseAction3d(Q, state1, epsilon); 
   
   while (t < max_steps)
@@ -75,47 +82,42 @@ for i = 1:total_episodes
     %reference = sin(ct*0.01)*10;
     %TODO: reinitialize reference
     
-    vnorm2 = dynamics3d(vnorm1, action1, 0.7);
+    reference = giveNewReference3d(k, t);
+    referenceN = reference/norm(reference); #normierung 
+    #fprintf('normierte reference %d \n',reference);
+    
+    vnorm2 = dynamics3d(vnorm1, action1, u);
     %vnorm2 = vnorm2/norm(vnorm2); %NORMIERUNG
     
-    angle45 = asind(abs(sum(u.*vnorm2))); %winkel zwischen normiertem vector und xy plane
+    angle45 = asind(abs(sum(idk.*vnorm2))); %winkel zwischen normiertem vector und xy plane
     if (angle45 < 45.0 || vnorm2(3) < 0 || xAngle >= 90 || yAngle >= 90)
     
-      
+      loopref = reference;
       break;
     
     end
     
     %ändern !winkelabweichung als reward nehmen
-    rewardValue = reward3d(reference, vnorm2);
+    rewardValue = reward3d(referenceN, vnorm2);
 
     %ÄNDERN!
     %error      = vnorm2-reference;
     %discerror2 = floor((error+91)*900/181);
+  
+    #getting respective angle differences
+    [xAngle, yAngle] = getAngles(vnorm2, referenceN);
+  
+    #round to nearest 0.5 step
+    x = roundIt(xAngle); 
+    y = roundIt(yAngle); 
+  
+    #new state  
+    state2 = giveState3d(x,y);
     
-    %Could be function
-    tmpVec1 = vnorm2; %setze x auf 0
-    tmpVec1(1) = 0;
-    tmpVec2 = vnorm2; %setze y auf 0
-    tmpVec2(2) = 0;
-  
-    tmpRef1 = reference;
-    tmpRef1(1) = 0; %setze x der reference auf 0
-    tmpRef2 = reference;
-    tmpRef2(2) = 0; %setze y der reference auf 0
-  
-    xAngle = acosd(sum(tmpRef1.*tmpVec1));
-    yAngle = acosd(sum(tmpRef2.*tmpVec2));
-  
-    %error = [xAngle;yAngle]; 
-    %floor(in) + ceil( (in-floor(in))/0.5) * 0.5
-    x = floor(xAngle) + ceil( (xAngle-floor(xAngle))/0.5) * 0.5; %rounding to 0.5 (up)
-    y = floor(yAngle) + ceil( (yAngle-floor(yAngle))/0.5) * 0.5;
-    
-    state2 = (360*x+1) + (y*2);
+    #new action
     action2    = chooseAction3d(Q, state2, epsilon);
    
-    qValue = update(Q, state1, state2, rewardValue, action1, action2);
+    qValue = update3d(Q, state1, state2, rewardValue, action1, action2, alpha, gamma);
     Q(state1, action1) = qValue;
      
     state1 = state2;
@@ -125,30 +127,71 @@ for i = 1:total_episodes
     t  = t+1;
     ct = ct+1;
     
-    statevector = [statevector; vnorm1];
-    refvector   = [refvector; reference];
+    statevectorX = [statevectorX; vnorm1(1)];
+    statevectorY = [statevectorY; vnorm1(2)];
+    statevectorZ = [statevectorZ; vnorm1(3)];
+    
+    refvectorX   = [refvectorX; reference(1)];
+    refvectorY   = [refvectorY; reference(2)];
+    refvectorZ   = [refvectorZ; reference(3)];
 
-    if length(statevector)>3000
-        statevector = [];
-        refvector   = [];
+    if length(statevectorX)> 50000
+      
+        statevectorX = [];
+        statevectorY = [];
+        statevectorZ = [];
+        
+        refvectorX   = [];
+        refvectorY   = [];
+        refvectorZ   = [];
+
     end
+  
+  if ( t == 999)
+    
+    loopref = reference;
+    
+  endif
+  
   end
   
-  epsilon = epsilon + 0.2/total_episodes; %epsilon wird größer => exploration sinkt
+  epsilon = start+(ende-start)*(exp(i-total_episodes)^(1/(total_episodes/10)));
+  #epsilon = epsilon + 0.2/total_episodes; %epsilon wird größer => exploration sinkt
   eps = [eps; epsilon];
 end
 
-for ii=1:length(statevector)
-    anglevector(ii) = statevector(ii);
+for ii=1:length(statevectorX)
+    anglevectorX(ii) = statevectorX(ii);
+    anglevectorY(ii) = statevectorY(ii);
+    anglevectorZ(ii) = statevectorZ(ii);
 end
 
-figure();
+h1 = figure();
 hold on;
 grid on;
-plot(refvector)
+plot(anglevectorX)
+plot(refvectorX)
+legend('Statevector', 'Reference');
+title ("X following");
+
+h2 = figure();
+hold on;
+grid on;
+plot(anglevectorY)
+plot(refvectorY)
+legend('Statevector', 'Reference');
+title ("Y following");
+
+h3 = figure();
+hold on;
+grid on;
+plot(anglevectorZ)
+plot(refvectorZ)
+legend('Statevector', 'Reference');
+title ("Z following");
+
 
 figure();
-hold;
 grid on;
 plot(eps)
 
