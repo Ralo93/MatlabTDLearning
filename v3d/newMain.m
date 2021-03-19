@@ -2,11 +2,12 @@
 
 %Clean initialization
 clear ; close all; clc;
-reference = [0, 0, 1]';
+#reference = [0, 0, 1]';
 statevectorX = [];
 statevectorY = [];
 statevectorZ = [];
 loopref = 0;
+
 
 refvectorX   = [];
 refvectorY   = [];
@@ -15,11 +16,12 @@ refvectorZ   = [];
 rewards = [];
 eps = [];
 ct = 0;
+t = 0;
 
-idk = [0, 0, 1]';
+plane = [0, 0, 1]';
 
 %Loop parameters
-total_episodes = 30;
+total_episodes = 18;
 max_steps      = 1000;
 k = 0.01; # parameter for reference giving
 
@@ -48,17 +50,21 @@ Q = rand(32400, 8);
 vnorm1(1)  =  -0.4082;                    
 vnorm1(2)  =   0.4082; % entspricht normiertem -2,2,4 vektor (gültig)
 vnorm1(3)  =   0.8165; %winkel zu xy-plane(vnorm=[0;0;1]) ist 54.736°
+
+#RANDOMIZE starting state!
+startingState = randi([1, 32400]);
+
+#TODO
+#add vectorFromState(state)
+
+
+
 vnorm1 = vnorm1'
 
 for i = 1:total_episodes
   fprintf('episode %d \n',i);
-  t = 0;
-  
-  if (i == 1)
-    reference = reference/norm(reference); %normierung, already normed (0,0,1)
-  else
-    reference = loopref;
-  end
+    
+  reference = giveNewReference3d(k, t);
   
   #get diff angles of state and references lik xAngle = acosd(sum(tmpRef1.*tmpVec1));
   [xAngle, yAngle] = getAngles(vnorm1, reference);
@@ -83,13 +89,11 @@ for i = 1:total_episodes
     %TODO: reinitialize reference
     
     reference = giveNewReference3d(k, t);
-    referenceN = reference/norm(reference); #normierung 
-    #fprintf('normierte reference %d \n',reference);
     
     vnorm2 = dynamics3d(vnorm1, action1, u);
     %vnorm2 = vnorm2/norm(vnorm2); %NORMIERUNG
     
-    angle45 = asind(abs(sum(idk.*vnorm2))); %winkel zwischen normiertem vector und xy plane
+    angle45 = asind(abs(sum(plane.*vnorm2))); %winkel zwischen normiertem vector und xy plane
     if (angle45 < 45.0 || vnorm2(3) < 0 || xAngle >= 90 || yAngle >= 90)
     
       loopref = reference;
@@ -98,18 +102,17 @@ for i = 1:total_episodes
     end
     
     %ändern !winkelabweichung als reward nehmen
-    rewardValue = reward3d(referenceN, vnorm2);
+    rewardValue = reward3d(reference, vnorm2);
 
     %ÄNDERN!
     %error      = vnorm2-reference;
     %discerror2 = floor((error+91)*900/181);
   
     #getting respective angle differences
-    [xAngle, yAngle] = getAngles(vnorm2, referenceN);
+    [xAngle, yAngle] = getAngles(vnorm2, reference);
   
     #round to nearest 0.5 step
-    x = roundIt(xAngle); 
-    y = roundIt(yAngle); 
+     
   
     #new state  
     state2 = giveState3d(x,y);
@@ -190,9 +193,11 @@ plot(refvectorZ)
 legend('Statevector', 'Reference');
 title ("Z following");
 
+#reference3d;
 
-figure();
-grid on;
-plot(eps)
+
+#figure();
+#grid on;
+#plot(eps)
 
 

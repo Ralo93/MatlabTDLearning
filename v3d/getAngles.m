@@ -1,4 +1,4 @@
-function [xAngle, yAngle] = getAngles(vnorm, reference)
+function [x, y] = getAngles(vnorm, reference)
   
     tmpVec1 = vnorm; %setze x auf 0
     tmpVec1(1) = 0;
@@ -13,5 +13,7 @@ function [xAngle, yAngle] = getAngles(vnorm, reference)
     xAngle = acosd(sum(tmpRef1.*tmpVec1));
     yAngle = acosd(sum(tmpRef2.*tmpVec2));
   
+    x = roundIt(xAngle); 
+    y = roundIt(yAngle);
     return;
 end
