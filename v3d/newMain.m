@@ -15,7 +15,7 @@ refvectorZ   = [];
 
 rewards = [];
 eps = [];
-ct = 0;
+ct = 0
 t = 0;
 
 plane = [0, 0, 1]';
