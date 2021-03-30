@@ -1,12 +1,12 @@
-function qValue = update3d(Q, state1, state2, reward, action1, action2, alpha, gamma)
+function qValue = update3d(Q, sx1, sy1, a, alpha, gamma, qmax, reward);
   
   
-  predict = Q(state1, action1);
-  target = reward + gamma*Q(state2, action2);
+  predict = Q(sx1, sy1, a);
+  target = reward + gamma*qmax;
   
-  Q(state1, action1) = Q(state1, action1) + alpha * (target - predict);
+  qValue = Q(sx1, sy1, a) + alpha * (target - predict);
   
-  qValue = Q(state1, action1);
+  return;
   
   
   

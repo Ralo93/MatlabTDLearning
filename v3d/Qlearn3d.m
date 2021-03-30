@@ -154,6 +154,7 @@ plot(eps)
 
 
 # Saving table to mat file for symmetry and value check
+# Saving table to mat file for symmetry and value check
 save('learned.mat', 'Q');
 
 

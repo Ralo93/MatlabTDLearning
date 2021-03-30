@@ -1,1 +1,3 @@
-function action = chooseAction3d(Q, state, epsilon)      if (rand(1) > epsilon)    %Take random action in given state        action = ceil(rand(1)*8);    return;      else    %Take max value action in given state        values = Q(state, :);    [val, idx] = max(values);    action = idx;    return;  end
+function action = chooseAction3d(Q, stateX, stateY, epsilon, actions)        #Q is (180, 180, 8);    #state is (20, 20, 0);      if (rand(1) > epsilon)    %Take random action in given state    #fprintf('bigger');    action = ceil(rand(1)*actions);    return;      else  #fprintf('take highest \n');        %Take max value action in given state    vals = Q(stateX, stateY, :);        v = max(vals);        for i = 1:actions            tmp = vals(i);      if ( tmp == v)                action = i;              endif
+          endfor
+            return;  end

@@ -9,6 +9,12 @@ function reward = reward3d(reference, vnorm)
   vnorm = vnorm';
   reference = reference';
   
+  reward = norm(reference - vnorm, 2);
+  return;
+  
+  #***DEAD CODE FROM HERE ON BUT FOR REASONING STILL INCLUDED***
+  
+  
   %Reward = |reference| + p(vnorm)
   vnormR = vnorm(1,1:2);
   
@@ -53,6 +59,11 @@ function reward = reward3d(reference, vnorm)
   %fprintf('yAngle Diff: %d \n',yAngle);
   
   y = floor(yAngle) + ceil( (yAngle-floor(yAngle))/0.5) * 0.5;
+  
+  
+  
+  
+  
   reward = (-b*x*y)/100; %werte kleiner machen
   %fprintf('Reward %d \n',reward);
   

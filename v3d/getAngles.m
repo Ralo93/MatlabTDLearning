@@ -13,7 +13,8 @@ function [x, y] = getAngles(vnorm, reference)
     xAngle = acosd(sum(tmpRef1.*tmpVec1));
     yAngle = acosd(sum(tmpRef2.*tmpVec2));
   
-    x = roundIt(xAngle); 
-    y = roundIt(yAngle);
+    x = ceil(xAngle); #ceiled for 90
+    y = ceil(yAngle);
     return;
+    
 end

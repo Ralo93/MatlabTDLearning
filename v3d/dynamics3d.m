@@ -52,8 +52,7 @@ function [vnorm] = dynamics3d(vnorm,a,u)
         vnorm = R*vnorm;
     end
     
-    #***WIESO AB HIER NORMIERT?***
-    
+   
     
     if a==5
         v1 = dynamics3d(vnorm,1,u);
