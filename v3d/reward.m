@@ -1,12 +1,14 @@
-function reward = reward(stateX, stateY)
+function reward = reward(xError45, yError45)
   
-  if (stateX == 0 && stateY == 0)
+  b = -1.5;
+  
+  if (xError45 == 0 && yError45 == 0)
     
-    reward = 2;
+    reward = 0;
     return;
     
   endif
   
-  reward = 1/(abs(stateX)+abs(stateY)); #can use tuning
+  reward = b*(abs(xError45)+abs(yError45)); #can use tuning
 
 end

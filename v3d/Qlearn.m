@@ -40,7 +40,8 @@ ende = 1;
 
 % ***Q table***
 Q = rand(90, 90, 8); #259.200 auf 1° geändert
-reference = [1,1,0]; # klären
+#reference = [1,1,0]; # klären
+reference = [0,0,1];
 reference = reference/norm(reference);
 reference = reference';
 
@@ -64,11 +65,12 @@ for i = 1:total_episodes
 ##  vnorm  = vStep2;
   
   % choose random initial state btw. -10-10 degrees
-  stateX = 2*(rand(1)-0.5)*10*pi/180;
+  stateX = 2*(rand(1)-0.5)*10*pi/180; #between +-1/sqrt(2)
   stateY = 2*(rand(1)-0.5)*10*pi/180;
-  tx = rotx(stateX);
+  
+  tx = rotx(stateX); #rotation matrix with a given angle
   ty = roty(stateY);
-  vnorm = ty*tx*[0;0;1];
+  vnorm = ty*tx*[0;0;1]; #actual state as a vector, but reference changed!
   
   
   while ct < max_steps
@@ -86,11 +88,11 @@ for i = 1:total_episodes
       fprintf('3<0 \n');
       loopref = reference;
       break;
-    elseif ( stateX >= 90 || stateX < -90)
+    elseif ( stateX >= 1/sqrt(2) || stateX < -1/sqrt(2))  # müsste größer oder kleiner als +-0.707 sein
       fprintf('xAngle!! and stuff \n');
       loopref = reference;
       break;
-    elseif ( stateY >= 90 || stateY < -90)
+    elseif ( stateY >= 1/sqrt(2) || stateY < -1/sqrt(2)) # siehe oben
       fprintf('yAngle!! and stuff \n');
       loopref = reference;
       break;
@@ -99,11 +101,12 @@ for i = 1:total_episodes
     endif
     
     
-    
     % choose action (and reward) depending on errorX/Y (not on stateX/Y) and 
     % shift error from -45-45 to 1-90
-    [xError, yError] = getAngles(vnorm, reference);
-    xErrorShift = max([min([xError+45,90]),1]);
+    [xError, yError] = getAngles(vnorm, reference); #+-45
+   # printf("x: %d \n", xError);
+    #printf("y: %d \n", yError);
+    xErrorShift = max([min([xError+45,90]),1]); #cool
     yErrorShift = max([min([yError+45,90]),1]);
     a = chooseAction3d(Q, xErrorShift, yErrorShift, epsilon, 8);
     rewardValue = reward(xError, yError);
@@ -117,12 +120,16 @@ for i = 1:total_episodes
     yErrorShift2 = max([min([yError+45,90]),1]);
     qmaxValue = qmax(Q, xErrorShift2, yErrorShift2);
     
-    Q(xErrorShift, yErrorShift, a) = update3d(Q, xErrorShift, yErrorShift, a, alpha, gamma, qmaxValue, rewardValue);
-    vnorm = newState;
+     
+    updatedValue = update3d(Q, xErrorShift, yErrorShift, a, alpha, gamma, qmaxValue, rewardValue);
+    Q(xErrorShift, yErrorShift, a) = updatedValue;
     
+    #TODO:
+    #Q = insertSymmetry(Q, ErrorShift, yErrorShift, a, updatedValue);
     
     rewards(mod(t,plott)+1) = rewardValue;
     
+    vnorm = newState;
     statevector(:,mod(t,plott)+1) = vnorm(:);
     refvector(:,mod(t,plott)+1)   = reference(:); #[refvector; reference];;
 
@@ -151,7 +158,7 @@ statevector = [statehist, statevector(:,1:lhist)];
 refvector   = [refhist, refvector(:,1:lhist)];
 rewards     = [rewardhist, rewards(1:lhist)];
 
-
+save('learned.mat', 'Q');
 
 figure()
 hold on;
@@ -160,7 +167,6 @@ plot(refvector(1,:))
 xlabel('time step');
 ylabel('x reference');
        
- 
 figure()
 hold on;
 plot(statevector(2,:));

@@ -5,11 +5,11 @@ function reward = reward3d(reference, vnorm)
   %which is -1.5 and is used for making rewards negative:
   %small differences between reference and vnorm get punished only a litte
   %while big differences bet punished a lot
-  b = 1.5;
+  b = -1.5;
   vnorm = vnorm';
   reference = reference';
   
-  reward = norm(reference - vnorm, 2);
+  reward = b*norm(reference - vnorm, 2);
   return;
   
   #***DEAD CODE FROM HERE ON BUT FOR REASONING STILL INCLUDED***
@@ -59,9 +59,6 @@ function reward = reward3d(reference, vnorm)
   %fprintf('yAngle Diff: %d \n',yAngle);
   
   y = floor(yAngle) + ceil( (yAngle-floor(yAngle))/0.5) * 0.5;
-  
-  
-  
   
   
   reward = (-b*x*y)/100; %werte kleiner machen

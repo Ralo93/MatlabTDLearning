@@ -1,4 +1,4 @@
-%Q-Learning Off-Policy
+  %Q-Learning Off-Policy
 
 %Clean initialization
 clear ; close all; clc;
@@ -6,6 +6,7 @@ reference = 0;
 statevector = [];
 refvector   = [];
 rewards = [];
+accRewards = [];
 eps = [];
 ct = 0;
 
@@ -42,7 +43,6 @@ for i = 1:total_episodes
   stateError = floor((error+91)*900/181);
   #fprintf('sE: %d \n', stateError);
   
-  
   while (t < max_steps)
   
     reference = sin(ct*0.001)*44; #the last digit describes the angle to which learning should be done, maximum is 44
@@ -78,6 +78,9 @@ for i = 1:total_episodes
   
     rewardValue = reward(reference, state2);
     rewards = [rewards; rewardValue];
+    
+    #***add accumulated rewards***
+    #accRewards = [accRewards; accRewards(
     error      = state2-reference;
     discerror2 = floor((error+91)*900/181);
     #action2    = chooseAction(Q, discerror2, epsilon);
@@ -120,7 +123,7 @@ for i = 1:total_episodes
   
   #epsilon = epsilon + 0.2/total_episodes; %epsilon wird größer => exploration sinkt
   eps = [eps; epsilon];
- 
+  
 end
 
 for ii=1:length(statevector)

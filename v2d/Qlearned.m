@@ -10,7 +10,7 @@ eps = [];
 ct = 0;
 
 %Loop parameters
-total_episodes = 50;
+total_episodes = 30;
 max_steps      = 1000;
 loopstate = 0;
 
@@ -54,7 +54,7 @@ for i = 1:total_episodes
   
   while (t < max_steps)
   
-    reference = sin(ct*0.001)*40; #the last digit describes the angle to follow in Qlearned, max is ~40
+    reference = sin(ct*0.01)*40; #the last digit describes the angle to follow in Qlearned, max is ~40
 
     #*** rounding the reference to 0.5 steps ***
     acc = 0.5;
@@ -108,7 +108,7 @@ for i = 1:total_episodes
     Q(q, 2) = tmp2;
     
     
-    if length(statevector) > 50000
+    if length(statevector) > 30000
        
        figure()
        hold on;
