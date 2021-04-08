@@ -60,7 +60,7 @@ Q = rand(180, 180, 3); #259.200
 % action1 = chooseAction(Q, vnorm1);
 
 #testvector
-discreteAcc = 1/root(2);
+discreteAcc = 1/sqrt(2);
 vnorm1(1)  =  -0.4082;                    
 vnorm1(2)  =   0.4082;
 
