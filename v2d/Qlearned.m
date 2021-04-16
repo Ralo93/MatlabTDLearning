@@ -20,7 +20,7 @@ gamma = 0.75;
 u = 0.7;
 %e-greedy parameter for exploration
 epsilon = 1;
-start = 0.8;
+start = 1;
 ende = 1;
 
 % ***Q table***

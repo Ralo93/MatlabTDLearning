@@ -24,7 +24,7 @@ t = 0;
 plane = [0, 0, 1]';
 
 %Loop parameters
-total_episodes = 200;
+total_episodes = 50;
 max_steps      = 1000;
 k = 0.0001; # parameter for reference giving
 
@@ -34,15 +34,19 @@ gamma = 0.75;
 u = 1;%0.7;
 
 %e-greedy parameter for exploration
-epsilon = 0.8; #redundant
-start = 0.8;
+epsilon = 1; #redundant
+start = 1;
 ende = 1;
 
 % ***Q table***
-Q = rand(90, 90, 8); #259.200 auf 1° geändert
+mat = load("ll.mat");
+tt = struct2cell(mat);
+Q = cell2mat(tt);
+
 #reference = [1,1,0]; # klären
-reference = [0,0,1]';
+reference = [0,0,1];
 reference = reference/norm(reference);
+reference = reference';
 
 for i = 1:total_episodes
   fprintf('episode %d \n',i);
@@ -108,24 +112,23 @@ for i = 1:total_episodes
     yErrorShift = max([min([yError+45,90]),1]);
     a = chooseAction3d(Q, xErrorShift, yErrorShift, epsilon, 8);
     rewardValue = reward(xError, yError);
-       
+    
     newState = dynamics3d(vnorm, a, u); # nicht normiert!
     newState = newState/norm(newState); # vector
     
     #calc diff between newState and reference to actually get a q-state
-    [xError2, yError2] = getAngles(newState, reference);
-    xErrorShift2 = max([min([xError2+45,90]),1]);
-    yErrorShift2 = max([min([yError2+45,90]),1]);
+    [xError, yError] = getAngles(newState, reference);
+    xErrorShift2 = max([min([xError+45,90]),1]);
+    yErrorShift2 = max([min([yError+45,90]),1]);
     qmaxValue = qmax(Q, xErrorShift2, yErrorShift2);
     
+     
     updatedValue = update3d(Q, xErrorShift, yErrorShift, a, alpha, gamma, qmaxValue, rewardValue);
     Q(xErrorShift, yErrorShift, a) = updatedValue;
     
-    #fprintf('xAngle!! %d \n', xError);
-    #fprintf('yAngle!! %d \n', yError);
-    #TODO: Insert symmetry, with original states
-    Q = insertSymmetry(Q, xError, yError, a, updatedValue);
-
+    #TODO:
+    #Q = insertSymmetry(Q, xErrorShift, yErrorShift, a, updatedValue);
+    
     rewards(mod(t,plott)+1) = rewardValue;    
     vnorm = newState;
     statevector(:,mod(t,plott)+1) = vnorm(:);
@@ -156,7 +159,7 @@ statevector = [statehist, statevector(:,1:lhist)];
 refvector   = [refhist, refvector(:,1:lhist)];
 rewards     = [rewardhist, rewards(1:lhist)];
 
-save('ll.mat', 'Q');
+save('final.mat', 'Q');
 
 figure()
 hold on;
